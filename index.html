@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrafficMind</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.socket.io/4.5.1/socket.io.min.js"></script>
+    
+</head>
+<body>
+    <div class="container mt-5">
+        <h2 class="text-center">TrafficMind</h2><br>
+        <div class="row">
+            <!-- Add Vehicle Form -->
+            <div class="col-md-6">
+                <h4>Add Vehicle</h4>
+                <form id="vehicle-form">
+                    <div class="mb-3">
+                        <label for="vehicle_number" class="form-label">Vehicle Number</label>
+                        <input type="text" id="vehicle_number" name="vehicle_number" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="owner_name" class="form-label">Owner Name</label>
+                        <input type="text" id="owner_name" name="owner_name" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="vehicle_type" class="form-label">Vehicle Type</label>
+                        <select id="vehicle_type" name="vehicle_type" class="form-select" required>
+                            <option value="Car">Car</option>
+                            <option value="Bike">Bike</option>
+                            <option value="Truck">Truck</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="registration_date" class="form-label">Registration Date</label>
+                        <input type="date" id="registration_date" name="registration_date" class="form-control" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Add Vehicle</button>
+                </form>
+            </div>
+            <!-- Add Fine Form -->
+            <div class="col-md-6">
+                <h4>Add Fine</h4>
+                <form id="fine-form">
+                    <div class="mb-3">
+                        <label for="vehicle_number_fine" class="form-label">Vehicle Number</label>
+                        <input type="text" id="vehicle_number_fine" name="vehicle_number" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="fine_type" class="form-label">Fine Type</label>
+                        <input type="text" id="fine_type" name="fine_type" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="fine_amount" class="form-label">Fine Amount</label>
+                        <input type="number" id="fine_amount" name="fine_amount" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="fine_date" class="form-label">Fine Date</label>
+                        <input type="date" id="fine_date" name="fine_date" class="form-control" required>
+                    </div>
+                    <button type="submit" class="btn btn-danger w-100">Add Fine</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+        <!-- Button to access the admin dashboard -->
+        <div style="display: flex; justify-content: center; align-items: center; height: 20vh;">
+            <a href="/admin" class="btn btn-primary btn-lg" style="background-color: #38bd2f; color: rgb(0, 0, 0); padding: 10px 20px; font-size: 18px; border-radius: 5px; text-decoration: none;">Go to Admin Dashboard</a>
+        </div>
+        
+   
+    <script>
+        $(document).ready(function () {
+            const socket = io();
+
+            // Add Vehicle Form Submission
+            $("#vehicle-form").on("submit", function (e) {
+                e.preventDefault();
+                const data = $(this).serialize();
+
+                $.post("/add_vehicle", data, function (response) {
+                    if (response.status === "success") {
+                        alert("Vehicle added successfully!");
+                        $("#vehicle-form")[0].reset();
+                    }
+                });
+            });
+
+            // Add Fine Form Submission
+            $("#fine-form").on("submit", function (e) {
+                e.preventDefault();
+                const data = $(this).serialize();
+
+                $.post("/add_fine", data, function (response) {
+                    if (response.status === "success") {
+                        alert("Fine added successfully!");
+                        $("#fine-form")[0].reset();
+                    }
+                });
+            });
+
+            // Real-time updates
+            socket.on("vehicle_added", (data) => {
+                console.log("Vehicle added in real-time:", data);
+            });
+
+            socket.on("fine_added", (data) => {
+                console.log("Fine added in real-time:", data);
+            });
+        });
+    </script>
+</body>
+</html>
